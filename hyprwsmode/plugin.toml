@@ -1,0 +1,19 @@
+# Bar widget that reflects the current mode of the focused Hyprland workspace
+# (tile / stack / float) as reported by the hyprwsmode compositor plugin.
+#
+# The plugin id follows Noctalia's <author>/<plugin> convention. Per the
+# community-plugins layout, the directory name must match the part after the
+# slash, so the plugin lives at `hyprwsmode/`.
+
+id          = "subiqt/hyprwsmode"
+name        = "Hyprwsmode"
+version     = "0.1.0"
+plugin_api  = 3
+author      = "subiqt"
+license     = "MIT"
+description = "Bar widget showing the hyprwsmode compositor plugin's per-workspace mode with click-to-toggle."
+tags        = ["bar", "hyprland", "indicator"]
+
+[[widget]]
+id    = "wsmode"
+entry = "wsmode.luau"
