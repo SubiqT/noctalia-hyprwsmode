@@ -5,14 +5,19 @@
 # community-plugins layout, the directory name must match the part after the
 # slash, so the plugin lives at `hyprwsmode/`.
 
-id          = "subiqt/hyprwsmode"
-name        = "Hyprwsmode"
-version     = "0.1.0"
-plugin_api  = 4
-author      = "subiqt"
-license     = "MIT"
-description = "Bar widget showing the hyprwsmode compositor plugin's per-workspace mode with click-to-toggle."
-tags        = ["bar", "hyprland", "indicator"]
+id           = "subiqt/hyprwsmode"
+name         = "Hyprwsmode"
+version      = "0.1.0"
+# `plugin_api` is what the current Noctalia runtime requires (post commit
+# 6b36320, 2026-07-16). `min_noctalia` is what the pre-migration runtime
+# requires. Both are declared so the manifest validates against either
+# runtime; each ignores the key it does not know.
+plugin_api   = 4
+min_noctalia = "5.0.0"
+author       = "subiqt"
+license      = "MIT"
+description  = "Bar widget showing the hyprwsmode compositor plugin's per-workspace mode with click-to-toggle."
+tags         = ["bar", "hyprland", "indicator"]
 
 [[widget]]
 id    = "wsmode"
