@@ -8,7 +8,7 @@
 id          = "subiqt/hyprwsmode"
 name        = "Hyprwsmode"
 version     = "0.1.0"
-plugin_api  = 3
+plugin_api  = 4
 author      = "subiqt"
 license     = "MIT"
 description = "Bar widget showing the hyprwsmode compositor plugin's per-workspace mode with click-to-toggle."
