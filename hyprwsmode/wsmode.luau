@@ -76,10 +76,15 @@ local function render()
     barWidget.setVisible(false)
     return
   end
-  -- Empty string clears the corresponding slot in the bar's built-in
-  -- glyph+text row; the layout collapses so a text-only or glyph-only
-  -- widget doesn't leave a gap.
-  barWidget.setGlyph(showGlyph and (GLYPHS[mode] or "layout") or "")
+  -- setGlyph on an empty string tries to resolve a glyph named "" and falls
+  -- back to Noctalia's kMissingGlyph (the skull), so leave the glyph slot
+  -- untouched entirely when show_glyph is off. Widget rebuilds on any
+  -- settings change reset the slot, so no stale glyph from a previous
+  -- lifecycle can bleed through. Empty text is safe — the label slot has
+  -- no lookup, it just renders nothing.
+  if showGlyph then
+    barWidget.setGlyph(GLYPHS[mode] or "layout")
+  end
   barWidget.setText(showText and mode or "")
   if showTooltip then
     barWidget.setTooltip("workspace " .. tostring(activeWsId) .. " · " .. mode)
