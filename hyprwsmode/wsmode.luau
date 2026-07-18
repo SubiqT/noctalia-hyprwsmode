@@ -24,6 +24,8 @@
 --                                    it tracks. The events flow back through
 --                                    onLine below, so initial state and
 --                                    every live update follow one code path.
+--   5. Only when hide_on_default is on: two `hyprctl getoption -j` calls to
+--      read the compositor plugin's global default mode.
 --
 -- Steps 3 and 4 are chained, not parallel, so nc has time to finish
 -- connect(2) during the activeworkspace round-trip before broadcast events
@@ -41,13 +43,23 @@ local GLYPHS = {
   float = "app-window",
 }
 
--- Read once at load. Noctalia rebuilds the widget entry (re-runs this
--- top-level chunk) whenever a setting changes, so caching in a local is
--- safe and cheaper than a getConfig call per render.
-local showText = noctalia.getConfig("show_text")
+-- Settings read once at load. Noctalia rebuilds the widget entry on any
+-- settings change, so caching in locals is safe and cheaper than a
+-- noctalia.getConfig call per render.
+local showGlyph     = noctalia.getConfig("show_glyph")
+local showText      = noctalia.getConfig("show_text")
+local hideOnDefault = noctalia.getConfig("hide_on_default")
+local showTooltip   = noctalia.getConfig("show_tooltip")
 
 local modeByWs = {}      -- workspace id -> "tile" | "stack" | "float"
 local activeWsId = nil   -- currently focused workspace id (may be negative for special workspaces)
+
+-- The compositor plugin's global default mode ("tile" | "stack" | "float"),
+-- seeded via hyprctl getoption only when hide_on_default is on. Left nil
+-- otherwise; render() then treats hide_on_default as inactive until it
+-- lands, so the widget renders normally in the meantime instead of hiding
+-- pre-bootstrap based on stale defaults.
+local globalDefaultMode = nil
 
 -- Start hidden; reveal on first successful render. The default value tree
 -- (glyph + text) is meaningless until we know the mode.
@@ -60,10 +72,18 @@ local function render()
     barWidget.setVisible(false)
     return
   end
-  barWidget.setGlyph(GLYPHS[mode] or "layout")
-  -- Empty string when disabled: the bar's built-in glyph+text row will
-  -- render just the glyph (no gap for a missing label).
+  if hideOnDefault and globalDefaultMode ~= nil and mode == globalDefaultMode then
+    barWidget.setVisible(false)
+    return
+  end
+  -- Empty string clears the corresponding slot in the bar's built-in
+  -- glyph+text row; the layout collapses so a text-only or glyph-only
+  -- widget doesn't leave a gap.
+  barWidget.setGlyph(showGlyph and (GLYPHS[mode] or "layout") or "")
   barWidget.setText(showText and mode or "")
+  if showTooltip then
+    barWidget.setTooltip("workspace " .. tostring(activeWsId) .. " · " .. mode)
+  end
   barWidget.setVisible(true)
 end
 
@@ -120,6 +140,32 @@ noctalia.runAsync("hyprctl instances -j", function(res)
     noctalia.runAsync("hyprctl dispatch 'hl.plugin.wsmode.broadcast()'")
   end)
 end)
+
+-- Fetch the compositor plugin's global default mode only when
+-- hide_on_default is on. `plugin:wsmode:default_managed` is "managed" or
+-- "float"; when "managed", `plugin:wsmode:default_managed_type` picks
+-- between "tile" and "stack". Per-workspace overrides
+-- (default_managed_N / default_managed_type_N) are deliberately ignored:
+-- the user asked for a global hide, not a per-workspace one.
+if hideOnDefault then
+  noctalia.runAsync("hyprctl getoption -j plugin:wsmode:default_managed", function(r)
+    if r.exitCode ~= 0 then return end
+    local opt = noctalia.json.decode(r.stdout)
+    if type(opt) ~= "table" or type(opt.str) ~= "string" then return end
+    if opt.str == "float" then
+      globalDefaultMode = "float"
+      render()
+      return
+    end
+    noctalia.runAsync("hyprctl getoption -j plugin:wsmode:default_managed_type", function(r2)
+      if r2.exitCode ~= 0 then return end
+      local opt2 = noctalia.json.decode(r2.stdout)
+      if type(opt2) ~= "table" or type(opt2.str) ~= "string" then return end
+      globalDefaultMode = opt2.str
+      render()
+    end)
+  end)
+end
 
 -- ── Click actions ──────────────────────────────────────────────────────────
 --

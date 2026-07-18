@@ -33,8 +33,29 @@ id    = "wsmode"
 entry = "wsmode.luau"
 
   [[widget.setting]]
+  key             = "show_glyph"
+  type            = "bool"
+  label_key       = "settings.show_glyph.label"
+  description_key = "settings.show_glyph.description"
+  default         = true
+
+  [[widget.setting]]
   key             = "show_text"
   type            = "bool"
   label_key       = "settings.show_text.label"
   description_key = "settings.show_text.description"
+  default         = false
+
+  [[widget.setting]]
+  key             = "hide_on_default"
+  type            = "bool"
+  label_key       = "settings.hide_on_default.label"
+  description_key = "settings.hide_on_default.description"
+  default         = false
+
+  [[widget.setting]]
+  key             = "show_tooltip"
+  type            = "bool"
+  label_key       = "settings.show_tooltip.label"
+  description_key = "settings.show_tooltip.description"
   default         = false

@@ -131,9 +131,12 @@ type = "subiqt/hyprwsmode:wsmode"
 Per-widget settings, edited alongside the widget in Noctalia's bar
 configuration:
 
-| Setting     | Type   | Default | Description                                                                       |
-| ---         | ---    | ---     | ---                                                                               |
-| `show_text` | `bool` | `false` | Show the `tile` / `stack` / `float` label next to the glyph.                      |
+| Setting           | Type   | Default | Description                                                                                                                             |
+| ---               | ---    | ---     | ---                                                                                                                                     |
+| `show_glyph`      | `bool` | `true`  | Show the mode icon in the widget.                                                                                                       |
+| `show_text`       | `bool` | `false` | Show the `tile` / `stack` / `float` label next to the glyph.                                                                            |
+| `hide_on_default` | `bool` | `false` | Hide the widget when the focused workspace is in the compositor plugin's global default mode. Per-workspace overrides are ignored here. |
+| `show_tooltip`    | `bool` | `false` | Show a tooltip on hover with the focused workspace id and its mode.                                                                     |
 
 Colours follow Noctalia's palette roles so they track theme changes
 automatically.

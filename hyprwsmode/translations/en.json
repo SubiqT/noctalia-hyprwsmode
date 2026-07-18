@@ -1,4 +1,10 @@
 {
+  "settings.show_glyph.label": "Show mode glyph",
+  "settings.show_glyph.description": "Show the mode icon in the widget. On by default; turn off for a text-only look.",
   "settings.show_text.label": "Show mode text",
-  "settings.show_text.description": "Show the mode label (tile / stack / float) next to the glyph. Off by default; the glyph alone is usually enough."
+  "settings.show_text.description": "Show the mode label (tile / stack / float) next to the glyph. Off by default; the glyph alone is usually enough.",
+  "settings.hide_on_default.label": "Hide on default mode",
+  "settings.hide_on_default.description": "Hide the widget when the focused workspace is in the compositor plugin's global default mode. Useful for a bar that only surfaces the mode indicator when it matters.",
+  "settings.show_tooltip.label": "Show tooltip",
+  "settings.show_tooltip.description": "Show a tooltip on hover with the focused workspace id and its mode. Handy when both the glyph and label are hidden."
 }
