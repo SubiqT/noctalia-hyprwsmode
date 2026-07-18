@@ -2,7 +2,7 @@
 
 -- Bar widget for the hyprwsmode Hyprland compositor plugin.
 --
--- Subscribes to Hyprland's socket2 stream via a long-lived socat process and
+-- Subscribes to Hyprland's socket2 stream via a long-lived nc process and
 -- filters two prefixes:
 --
 --   wsmode>>N,<mode>      hyprwsmode's per-workspace mode. Emitted on every
@@ -16,7 +16,7 @@
 --                                    so we can build the socket2 path even
 --                                    when HYPRLAND_INSTANCE_SIGNATURE is
 --                                    not in Noctalia's env.
---   2. Start `socat -U - UNIX-CONNECT:.../.socket2.sock` via runStream.
+--   2. Start `nc -U .../.socket2.sock` via runStream.
 --   3. `hyprctl activeworkspace -j`  seed activeWsId.
 --   4. `hyprctl dispatch 'hl.plugin.wsmode.broadcast()'`
 --                                    ask the compositor plugin to re-emit
@@ -25,14 +25,15 @@
 --                                    onLine below, so initial state and
 --                                    every live update follow one code path.
 --
--- Steps 3 and 4 are chained, not parallel, so socat has time to finish
+-- Steps 3 and 4 are chained, not parallel, so nc has time to finish
 -- connect(2) during the activeworkspace round-trip before broadcast events
 -- start arriving.
 --
 -- Graceful degradation: no error toasts anywhere. If the compositor plugin
 -- is not loaded, `broadcast()` fails silently and no wsmode>> lines ever
--- arrive; mode stays nil and the widget stays hidden. If socat is missing
--- the shell command exits and the same non-render path applies.
+-- arrive; mode stays nil and the widget stays hidden. If nc is missing or
+-- lacks -U (GNU netcat) the shell command exits and the same non-render
+-- path applies.
 
 local GLYPHS = {
   tile  = "layout-grid",
@@ -93,9 +94,10 @@ noctalia.runAsync("hyprctl instances -j", function(res)
   if xdgRuntime == nil or xdgRuntime == "" then return end
   local socketPath = xdgRuntime .. "/hypr/" .. sig .. "/.socket2.sock"
 
-  -- socat streams the socket line-by-line to stdout. runStream terminates
-  -- the process automatically on script reload / entry removal.
-  noctalia.runStream("socat -U - 'UNIX-CONNECT:" .. socketPath .. "'", onLine)
+  -- nc streams the socket line-by-line to stdout. OpenBSD-style netcat is
+  -- required for -U (Unix-domain) support. runStream terminates the process
+  -- automatically on script reload / entry removal.
+  noctalia.runStream("nc -U '" .. socketPath .. "'", onLine)
 
   -- Seed activeWsId, then ask the compositor plugin to re-broadcast every
   -- workspace's current mode. See bootstrap comment at the top of the file

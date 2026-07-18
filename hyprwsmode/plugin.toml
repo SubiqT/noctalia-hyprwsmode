@@ -18,11 +18,15 @@ author       = "subiqt"
 license      = "MIT"
 description  = "Bar widget showing the hyprwsmode compositor plugin's per-workspace mode with click-to-toggle."
 tags         = ["bar", "hyprland", "indicator"]
-# socat is used to stream Hyprland's socket2 UNIX socket. hyprctl comes with
-# Hyprland itself so it is not listed here; the compositor plugin (hyprwsmode)
-# is a Hyprland plugin, not a shell command, so it is documented in the README
-# instead of listed as a dependency.
-dependencies = ["socat"]
+# `nc` streams Hyprland's socket2 UNIX socket. OpenBSD-style netcat is
+# required for `-U` (Unix-domain) support; NixOS ships this by default via
+# libressl, and it is the standard `nc` on Arch, Debian, and Fedora too.
+# GNU netcat lacks `-U` and will not work.
+#
+# hyprctl comes with Hyprland itself so it is not listed here. The hyprwsmode
+# compositor plugin is a Hyprland plugin (not a shell command), so it is
+# documented in the README instead.
+dependencies = ["nc"]
 
 [[widget]]
 id    = "wsmode"
