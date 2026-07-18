@@ -113,3 +113,23 @@ noctalia.runAsync("hyprctl instances -j", function(res)
     noctalia.runAsync("hyprctl dispatch 'hl.plugin.wsmode.broadcast()'")
   end)
 end)
+
+-- ── Click actions ──────────────────────────────────────────────────────────
+--
+-- Fire the compositor plugin's dispatchers and let it decide the next mode.
+-- The wsmode>> event that the compositor emits after the mode change lands
+-- back through onLine above, so the widget's state and label update through
+-- the same code path as every other update. No optimistic UI mutation here.
+--
+-- toggle on Floating no longer needs a special case at the widget: the
+-- compositor plugin's doToggle transitions Float -> Managed[lastManaged]
+-- itself, so left click has one semantic ("cycle managed types, or leave
+-- float") that the plugin implements atomically.
+
+function onClick()
+  noctalia.runAsync("hyprctl dispatch 'hl.plugin.wsmode.toggle()'")
+end
+
+function onRightClick()
+  noctalia.runAsync("hyprctl dispatch 'hl.plugin.wsmode.toggle_float()'")
+end
