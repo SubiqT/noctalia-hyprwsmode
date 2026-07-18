@@ -128,8 +128,15 @@ type = "subiqt/hyprwsmode:wsmode"
 
 ## Configuration
 
-The widget has no settings in v1. Colours follow Noctalia's palette roles
-so they track theme changes automatically.
+Per-widget settings, edited alongside the widget in Noctalia's bar
+configuration:
+
+| Setting     | Type   | Default | Description                                                                       |
+| ---         | ---    | ---     | ---                                                                               |
+| `show_text` | `bool` | `false` | Show the `tile` / `stack` / `float` label next to the glyph.                      |
+
+Colours follow Noctalia's palette roles so they track theme changes
+automatically.
 
 ## Development
 

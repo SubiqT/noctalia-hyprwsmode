@@ -1,0 +1,4 @@
+{
+  "settings.show_text.label": "Show mode text",
+  "settings.show_text.description": "Show the mode label (tile / stack / float) next to the glyph. Off by default; the glyph alone is usually enough."
+}

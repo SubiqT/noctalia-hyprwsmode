@@ -41,6 +41,11 @@ local GLYPHS = {
   float = "app-window",
 }
 
+-- Read once at load. Noctalia rebuilds the widget entry (re-runs this
+-- top-level chunk) whenever a setting changes, so caching in a local is
+-- safe and cheaper than a getConfig call per render.
+local showText = noctalia.getConfig("show_text")
+
 local modeByWs = {}      -- workspace id -> "tile" | "stack" | "float"
 local activeWsId = nil   -- currently focused workspace id (may be negative for special workspaces)
 
@@ -56,7 +61,9 @@ local function render()
     return
   end
   barWidget.setGlyph(GLYPHS[mode] or "layout")
-  barWidget.setText(mode)
+  -- Empty string when disabled: the bar's built-in glyph+text row will
+  -- render just the glyph (no gap for a missing label).
+  barWidget.setText(showText and mode or "")
   barWidget.setVisible(true)
 end
 

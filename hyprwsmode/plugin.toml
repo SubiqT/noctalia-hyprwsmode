@@ -31,3 +31,10 @@ dependencies = ["nc"]
 [[widget]]
 id    = "wsmode"
 entry = "wsmode.luau"
+
+  [[widget.setting]]
+  key             = "show_text"
+  type            = "bool"
+  label_key       = "settings.show_text.label"
+  description_key = "settings.show_text.description"
+  default         = false
